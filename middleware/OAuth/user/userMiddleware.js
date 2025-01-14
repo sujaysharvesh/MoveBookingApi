@@ -14,7 +14,7 @@ export const AuthMiddleware = async (req, res, next) => {
   
     try {
       const payload = JWT.verify(token, process.env.JWT_SECRET);
-      const redisToken = await redis.get(`auth:${payload.userID}`);
+      const redisToken = await redis.get(`auth:${payload.userId}`);
       if (!redisToken || redisToken !== token) {
         return res
           .status(StatusCode.FORBIDDEN)

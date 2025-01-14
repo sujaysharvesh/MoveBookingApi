@@ -5,6 +5,8 @@ import passport from "passport";
 import GoogleAuthRouter from "./router/user/googleAuthRouter.js";
 import AuthRegister from "./router/user/AuthRouter.js";
 import MovieRouter from "./router/admin/movie/movieRouter.js"
+import TheaterRouter from  "./router/admin/theater/theaterRouter.js"
+import CityRouter from "./router/admin/city/cityRouter.js"
 import pg from 'pg';
 import { ErrorHandler } from "./middleware/OAuth/error/errorHandler.js";
 import { NotFound } from "./middleware/OAuth/error/notFound.js";
@@ -45,7 +47,10 @@ app.use("/api/test", (req, res) => {
 
 app.use("/auth", GoogleAuthRouter);
 app.use("/api/auth", AuthRegister);
-app.use("/api/admin", MovieRouter);
+app.use("/api/admin", AuthMiddleware, ShouldBeAdmin, MovieRouter);
+app.use('/api/admin', CityRouter)
+app.use("/api/admin/", TheaterRouter)
+
 
 app.use(NotFound)
 app.use(ErrorHandler)

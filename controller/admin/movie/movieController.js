@@ -97,7 +97,7 @@ export const CreateMovie = async (req, res) => {
   }
 };
 
-export const getMovieDetail = async (req, res) => {
+export const GetMovieDetail = async (req, res) => {
   try {
     const { title } = req.body;
 
@@ -107,7 +107,9 @@ export const getMovieDetail = async (req, res) => {
         .json({ message: "Movie title is required" });
     }
 
-    const movieDetail = await prisma.movie.findMany({ where: { title } });
+    const movieDetail = await prisma.movie.findMany({ 
+                      where: { title },
+                      include: { screenings: true, reviews: true } });
     if (movieDetail.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -159,7 +161,7 @@ export const UpdateMovie = async (req, res) => {
     if (genre) updateData.genre = genre;
     const updateMovie = await prisma.movie.update({
       where: { id },
-      data: { updateData },
+      data: updateData ,
     });
     res
       .status(StatusCodes.OK)

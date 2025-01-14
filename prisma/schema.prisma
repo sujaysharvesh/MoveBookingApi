@@ -63,11 +63,18 @@ enum MovieGenre {
   FAMILY
 }
 
+
+model City {
+  id String @id @default(uuid())
+  city String @unique
+  theaters Theater[]
+}
 model Theater {
   id              String         @id @default(uuid())
   name            String
   address         String
-  city            String
+  cityId          String
+  city            City @relation(fields: [cityId], references: [id])
   state           String
   zipCode         String
   totalScreens    Int

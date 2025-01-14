@@ -1,13 +1,13 @@
 import Express from "express";
-import { CreateMovie, DeleteMovie, UpdateMovie, getMovieDetail } from "../../../controller/admin/movie/movieController.js";
+import { CreateMovie, DeleteMovie, UpdateMovie, GetMovieDetail } from "../../../controller/admin/movie/movieController.js";
 
 const router = Express.Router()
 
-router.get("/movie-details", getMovieDetail)
+router.get("/movie-details", GetMovieDetail)
 
 router.post("/creat-movie", CreateMovie)
 
-router.patch("/update-movie", UpdateMovie)
+router.patch("/update-movie/:id", UpdateMovie)
 
 router.delete("/delete-movie", DeleteMovie)
 
