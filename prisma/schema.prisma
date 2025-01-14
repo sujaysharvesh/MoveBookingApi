@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
+  id            String       @id @default(uuid())
   email         String    @unique
   username      String    @unique
   password      String
@@ -30,10 +30,10 @@ enum UserRole {
 }
 
 model Movie {
-  id              Int         @id @default(autoincrement())
-  title           String
+  id              String         @id @default(uuid())
+  title           String      
   description     String      @db.Text
-  duration        Int         // Duration in minutes
+  duration        Int         
   releaseDate     DateTime
   language        String
   posterUrl       String?
@@ -58,10 +58,13 @@ enum MovieGenre {
   ROMANCE
   DOCUMENTARY
   ANIMATION
+  CRIME
+  FANTASY
+  FAMILY
 }
 
 model Theater {
-  id              Int         @id @default(autoincrement())
+  id              String         @id @default(uuid())
   name            String
   address         String
   city            String
@@ -76,9 +79,9 @@ model Theater {
 }
 
 model Screen {
-  id              Int         @id @default(autoincrement())
+  id              String         @id @default(uuid())
   name            String      // Example: Screen 1, Screen 2
-  theaterId       Int
+  theaterId       String
   theater         Theater     @relation(fields: [theaterId], references: [id])
   capacity        Int
   screenType      ScreenType  @default(STANDARD)
@@ -94,8 +97,8 @@ enum ScreenType {
 }
 
 model Seat {
-  id              Int         @id @default(autoincrement())
-  screenId        Int
+  id              String         @id @default(uuid())
+  screenId        String
   screen          Screen      @relation(fields: [screenId], references: [id])
   row             String      // Example: A, B, C
   number          Int         // Example: 1, 2, 3
@@ -110,10 +113,10 @@ enum SeatCategory {
 }
 
 model Screening {
-  id              Int         @id @default(autoincrement())
-  movieId         Int
+  id              String         @id @default(uuid())
+  movieId         String
   movie           Movie       @relation(fields: [movieId], references: [id])
-  screenId        Int
+  screenId        String
   screen          Screen      @relation(fields: [screenId], references: [id])
   startTime       DateTime
   endTime         DateTime
@@ -125,8 +128,8 @@ model Screening {
 }
 
 model Booking {
-  id              Int           @id @default(autoincrement())
-  userId          Int
+  id              String           @id @default(uuid())
+  userId          String
   user            User          @relation(fields: [userId], references: [id])
   bookingNumber   String        @unique
   totalAmount     Decimal       @db.Decimal(10, 2)
@@ -139,12 +142,12 @@ model Booking {
 }
 
 model Ticket {
-  id              Int         @id @default(autoincrement())
-  bookingId       Int
+  id              String         @id @default(uuid())
+  bookingId       String
   booking         Booking     @relation(fields: [bookingId], references: [id])
-  screeningId     Int
+  screeningId     String
   screening       Screening   @relation(fields: [screeningId], references: [id])
-  seatId          Int
+  seatId          String
   seat            Seat        @relation(fields: [seatId], references: [id])
   price           Decimal     @db.Decimal(10, 2)
   ticketNumber    String      @unique
@@ -153,10 +156,10 @@ model Ticket {
 }
 
 model Review {
-  id              Int         @id @default(autoincrement())
-  userId          Int
+  id              String         @id @default(uuid())
+  userId          String
   user            User        @relation(fields: [userId], references: [id])
-  movieId         Int
+  movieId         String
   movie           Movie       @relation(fields: [movieId], references: [id])
   rating          Int         @db.SmallInt // 1-5 rating
   comment         String?     @db.Text

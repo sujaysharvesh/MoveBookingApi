@@ -13,7 +13,7 @@ export const AuthMiddleware = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
   
     try {
-      const payload = JWT.verify(token, process.env.JWT_TOKEN);
+      const payload = JWT.verify(token, process.env.JWT_SECRET);
       const redisToken = await redis.get(`auth:${payload.userID}`);
       if (!redisToken || redisToken !== token) {
         return res

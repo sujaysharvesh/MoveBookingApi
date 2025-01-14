@@ -45,9 +45,7 @@ app.use("/api/test", (req, res) => {
 
 app.use("/auth", GoogleAuthRouter);
 app.use("/api/auth", AuthRegister);
-app.use("/api/admin",AuthMiddleware,ShouldBeAdmin, MovieRouter);
-
-
+app.use("/api/admin", MovieRouter);
 
 app.use(NotFound)
 app.use(ErrorHandler)
