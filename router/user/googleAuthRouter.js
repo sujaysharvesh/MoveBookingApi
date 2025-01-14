@@ -1,5 +1,5 @@
 import Express from "express";
-import passport from "../../middleware/OAuth/passport.js";
+import passport from "../../middleware/OAuth/auth/passport.js"
 import { loginSuccess, logout } from "../../controller/user/googleAuthController.js";
 
 

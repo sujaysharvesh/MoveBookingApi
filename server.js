@@ -1,11 +1,16 @@
 import Express from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
 import session from "express-session";
 import passport from "passport";
 import GoogleAuthRouter from "./router/user/googleAuthRouter.js";
 import AuthRegister from "./router/user/AuthRouter.js";
+import MovieRouter from "./router/admin/movie/movieRouter.js"
 import pg from 'pg';
+import { ErrorHandler } from "./middleware/OAuth/error/errorHandler.js";
+import { NotFound } from "./middleware/OAuth/error/notFound.js";
+import { AuthMiddleware } from "./middleware/OAuth/user/userMiddleware.js";
+import { ShouldBeAdmin } from "./middleware/OAuth/admin/AdminMiddleware.js";
+
 
 const { Client } = pg;
 
@@ -39,8 +44,13 @@ app.use("/api/test", (req, res) => {
 });
 
 app.use("/auth", GoogleAuthRouter);
-app.use("/auth/api", AuthRegister);
+app.use("/api/auth", AuthRegister);
+app.use("/api/admin",AuthMiddleware,ShouldBeAdmin, MovieRouter);
 
+
+
+app.use(NotFound)
+app.use(ErrorHandler)
 
 const port = process.env.PORT || 6969;
 const startServer = async () => {

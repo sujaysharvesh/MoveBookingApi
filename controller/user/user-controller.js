@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs"
 import prisma from "../../utils/prisma.js"
 import { StatusCodes } from "http-status-codes"
 import redis from "../../utils/redis.js";
+import Jwt from "jsonwebtoken";
 
 
 export const RegisterUser = async (req, res) => {
@@ -88,11 +89,11 @@ export const login = async (req, res) => {
       role: user.role, 
     };
   
-    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+    const token = Jwt.sign(tokenPayload, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
     const REDIS_LIFESPAN = 30 * 24 * 60 * 60;
-    redis.setex(`auth:${userDetails._id}`, REDIS_LIFESPAN, token);
+    redis.setex(`auth:${user.id}`, REDIS_LIFESPAN, token);
   
     res.json({ message: 'Login successful',token,});
   };
