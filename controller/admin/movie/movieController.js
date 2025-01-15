@@ -2,88 +2,35 @@ import { StatusCodes } from "http-status-codes";
 import prisma from "../../../utils/prisma.js";
 
 export const CreateMovie = async (req, res) => {
+  const createMovieSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    duration: z.number().int().positive("Duration must be a positive number"),
+    releaseDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid release date format. Use YYYY-MM-DD.",
+    }),
+    language: z.string().min(1, "Language is required"),
+    posterUrl: z.string().url().optional(),
+    trailerUrl: z.string().url().optional(),
+    genre: z.array(z.enum([
+      "ACTION", "ADVENTURE", "COMEDY", "DRAMA", "HORROR", "SCIFI", "THRILLER",
+      "ROMANCE", "DOCUMENTARY", "ANIMATION", "CRIME", "FANTASY", "FAMILY",
+    ])).min(1, "At least one genre is required"),
+  });
+
   try {
-    let {
-      title,
-      description,
-      duration,
-      releaseDate,
-      language,
-      posterUrl,
-      trailerUrl,
-      genre,
-    } = req.body;
+    const valiDate = createMovieSchema.parse(req.body);
 
-    if (
-      !title ||
-      !description ||
-      !duration ||
-      !releaseDate ||
-      !language ||
-      !genre
-    ) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ error: "Provide all essential details about the movie" });
-    }
-
-    if (isNaN(duration)) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ error: "Duration must be a number" });
-    }
-    duration = parseInt(duration);
-    const parsedDate = Date.parse(releaseDate);
-    if (isNaN(parsedDate)) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ error: "Invalid release date format. Use YYYY-MM-DD." });
-    }
-    releaseDate = new Date(parsedDate);
-    const validGenres = [
-      "ACTION",
-      "ADVENTURE",
-      "COMEDY",
-      "DRAMA",
-      "HORROR",
-      "SCIFI",
-      "THRILLER",
-      "ROMANCE",
-      "DOCUMENTARY",
-      "ANIMATION",
-      "CRIME",
-      "FANTASY",
-      "FAMILY",
-    ];
-
-    if (!Array.isArray(genre) || !genre.every((g) => validGenres.includes(g))) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({
-          error: `Invalid genres. Valid options are: ${validGenres.join(", ")}`,
-        });
-    }
-
-    const movieExists = await prisma.movie.findFirst({ where: { title } });
+    const movieExists = await prisma.movie.findFirst({ where: { title: valiDate.title } });
     if (movieExists) {
       return res
         .status(StatusCodes.CONFLICT)
         .json({ error: `Movie with title "${title}" already exists` });
     }
 
-    posterUrl = posterUrl || null;
-    trailerUrl = trailerUrl || null;
-
     const newMovie = await prisma.movie.create({
       data: {
-        title,
-        description,
-        duration,
-        releaseDate,
-        language,
-        posterUrl,
-        trailerUrl,
-        genre,
+        ...valiDate,
       },
     });
 
@@ -97,15 +44,14 @@ export const CreateMovie = async (req, res) => {
   }
 };
 
-export const GetMovieDetail = async (req, res) => {
-  try {
-    const { title } = req.body;
 
-    if (!title) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Movie title is required" });
-    }
+export const GetMovieDetail = async (req, res) => {
+  const getMovieDetailSchema = z.object({
+    title: z.string().min(1, "Movie title is required"),
+  });
+
+  try {
+    const { title } = getMovieDetailSchema.parse(req.body);
 
     const movieDetail = await prisma.movie.findMany({ 
                       where: { title },
@@ -125,80 +71,41 @@ export const GetMovieDetail = async (req, res) => {
   }
 };
 
-export const UpdateMovie = async (req, res) => {
-  try {
-    const {
-      title,
-      description,
-      duration,
-      releaseDate,
-      language,
-      posterUrl,
-      trailerUrl,
-      genre,
-    } = req.body;
-    const { id } = req.params;
-    const movieExists = await prisma.movie.findUnique({ where: { id } });
-    if (!movieExists) {
-      res.status(StatusCodes.NOT_FOUND).join("Movie Not Found");
-    }
-    const updateData = {};
-    if (title) updateData.title = title;
-    if (description) updateData.description = description;
-    if (duration) updateData.duration = parseInt(duration);
-    if (releaseDate) {
-      const parsedDate = Date.parse(releaseDate);
-      if (isNaN(parsedDate)) {
-        return res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "Invalid release date format. Use YYYY-MM-DD." });
-      }
-      updateData.releaseDate = new Date(parsedDate);
-    }
-    if (language) updateData.language = language;
-    if (posterUrl) updateData.posterUrl = posterUrl;
-    if (trailerUrl) updateData.trailerUrl = trailerUrl;
-    if (genre) updateData.genre = genre;
-    const updateMovie = await prisma.movie.update({
-      where: { id },
-      data: updateData ,
-    });
-    res
-      .status(StatusCodes.OK)
-      .json({ message: "Update movie succussfully", data: updateMovie });
-  } catch (err) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: "Something went wrong", error: err });
+export const UpdateMovie = async(req, res) => {
+  const updateMovieSchema = z.object({
+    title: z.string().min(1).optional(),
+    description: z.string().min(1).optional(),
+    duration: z.number().int().positive().optional(),
+    releaseDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid release date format. Use YYYY-MM-DD.",
+    }).optional(),
+    language: z.string().min(1).optional(),
+    posterUrl: z.string().url().optional(),
+    trailerUrl: z.string().url().optional(),
+    genre: z.array(z.enum([
+      "ACTION", "ADVENTURE", "COMEDY", "DRAMA", "HORROR", "SCIFI", "THRILLER",
+      "ROMANCE", "DOCUMENTARY", "ANIMATION", "CRIME", "FANTASY", "FAMILY",
+    ])).min(1).optional(),
+  });
+  try{
+    const validData = updateMovieSchema.parse(req.body);
+  }
+  catch(err){
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: "Something went wrong"})
   }
 };
 
-
-export const DeleteMovie = async (req, res) => {
-  try {
-    const { id } = req.body;
-
-    const movieExists = await prisma.movie.findUnique({ where: { id } });
-    if (!movieExists) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Movie Not Found" });
+export const DeleteMovie = async(req, res) => {
+  try{
+    const { id } = req.params;
+    const movieExits = await prisma.movie.findUnique({where: { id }})
+    if(!movieExits){
+      res.status(StatusCodes.NOT_FOUND).json("movie Not found")
     }
-
-    const deleteMovie = await prisma.movie.delete({
-      where: { id },
-    });
-
-    return res
-      .status(StatusCodes.OK)
-      .json({
-        message: "Movie deleted successfully",
-        deletedMovie: deleteMovie,
-      });
-  } catch (err) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: "Something went wrong",
-      error: err.message || err,
-    });
+    const deleteMovie = await prisma.movie.delete({ where: { id }})
+    res.status(StatusCodes.OK).json({message: "Movie Deleted succussfully"})
+  }
+  catch(err){
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: "Something went Wrong", error:err})
   }
 };
