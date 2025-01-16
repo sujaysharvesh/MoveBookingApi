@@ -8,7 +8,6 @@ export const CreateTheater = async (req, res) => {
     name: z.string().min(1, "Theater name is required"),
     address: z.string().min(1, "Address is required"),
     city: z.string().min(1, "City Name is required"),
-    totalScreens: z.number().int().positive(),
     contactNumber: z
       .string()
       .regex(/^\d{10}$/, "Contact number must be a valid 10-digit number"),
@@ -43,7 +42,6 @@ export const CreateTheater = async (req, res) => {
         name: validateData.name,
         address: validateData.address,
         cityId: city.id,
-        totalScreens: validateData.totalScreens,
         contactNumber: validateData.contactNumber,
         email: validateData.email,
       },
@@ -83,6 +81,13 @@ export const GetTheater = async (req, res) => {
     }
     const theaterExists = await prisma.theater.findFirst({
       where: { name: validateData.name },
+      include: {
+        screens: {
+          include: {
+            seatLayout: true
+          }
+        }
+      }
     });
     if (!theaterExists) {
       throw new NotFound("Theater not Found");

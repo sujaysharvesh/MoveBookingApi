@@ -36,7 +36,6 @@ export const CreateMovie = async (req, res) => {
 
     return res.status(StatusCodes.CREATED).json(newMovie);
   } catch (err) {
-    console.error("Error creating movie:", err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: "Something went wrong while creating the movie",
       error: err,
@@ -64,7 +63,6 @@ export const GetMovieDetail = async (req, res) => {
 
     return res.status(StatusCodes.OK).json(movieDetail);
   } catch (err) {
-    console.error("Error fetching movie details:", err);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Something went wrong", error: err });

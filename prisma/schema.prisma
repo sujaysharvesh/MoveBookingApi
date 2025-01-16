@@ -76,8 +76,8 @@ model Theater {
   name            String         
   address         String         @unique
   cityId          String
-  city            City @relation(fields: [cityId], references: [id])
-  totalScreens    Int
+  city            City           @relation(fields: [cityId], references: [id])
+  totalScreens    Int            @default(0)
   contactNumber   String
   email           String
   createdAt       DateTime    @default(now())
@@ -87,7 +87,7 @@ model Theater {
 
 model Screen {
   id              String         @id @default(uuid())
-  name            String      // Example: Screen 1, Screen 2
+  name            String      
   theaterId       String
   theater         Theater     @relation(fields: [theaterId], references: [id])
   capacity        Int
@@ -106,17 +106,26 @@ enum ScreenType {
 model Seat {
   id              String         @id @default(uuid())
   screenId        String
-  screen          Screen      @relation(fields: [screenId], references: [id])
-  row             String      // Example: A, B, C
-  number          Int         // Example: 1, 2, 3
+  screen          Screen         @relation(fields: [screenId], references: [id])
+  row             String         // Example: A, B, C
+  number          Int            // Example: 1, 2, 3
   category        SeatCategory
+  status          SeatStatus     @default(AVAILABLE)
   tickets         Ticket[]
 }
 
+enum SeatStatus {
+  AVAILABLE      
+  BOOKED         
+  RESERVED       
+  UNAVAILABLE    
+}
+
+
 enum SeatCategory {
-  STANDARD
-  PREMIUM
-  VIP
+  SLIVER
+  GOLD
+  PLATINUM
 }
 
 model Screening {
