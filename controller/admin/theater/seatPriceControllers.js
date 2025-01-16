@@ -86,8 +86,6 @@ export const updateSeatPrice = async (req, res) => {
   
     try {
       const validateData = SeatPriceSchema.parse(req.body);
-  
-      // Check if the screening exists
       const screeningExists = await prisma.screening.findUnique({
         where: { id: validateData.screeningId },
       });
@@ -97,26 +95,21 @@ export const updateSeatPrice = async (req, res) => {
           .status(StatusCodes.NOT_FOUND)
           .json({ message: "Screening not found" });
       }
-  
-      // Prepare the price update data
+
       const priceData = [];
       Object.entries(validateData.prices).forEach(([category, price]) => {
         if (price > 0) {
           priceData.push({
-            category: SeatCategory[category.toUpperCase()], // Ensure category is in uppercase
+            category: SeatCategory[category.toUpperCase()], 
             price: price,
           });
         }
       });
   
-      // Log the priceData to verify
       console.log("Price data to upsert:", priceData);
   
-      // Update prices for each category
       const updatedPrices = await Promise.all(
         priceData.map((priceDataItem) => {
-          console.log("Processing price data item:", priceDataItem);
-  
           return prisma.seatPrice.upsert({
             where: {
               screeningId_category: {
@@ -135,14 +128,11 @@ export const updateSeatPrice = async (req, res) => {
           });
         })
       );
-  
-      // Retrieve updated screening details with updated prices
       const updatedScreening = await prisma.screening.findUnique({
         where: { id: validateData.screeningId },
         include: { price: true },
       });
   
-      // Send success response
       res.status(StatusCodes.OK).json({
         message: "Updated seat prices successfully",
         data: updatedScreening,
@@ -154,7 +144,6 @@ export const updateSeatPrice = async (req, res) => {
           .json({ message: "Validation Error", error: err.errors });
       }
   
-      // Handle other errors
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: "Something went wrong", error: err.message });

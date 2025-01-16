@@ -4,19 +4,19 @@ import session from "express-session";
 import passport from "passport";
 import GoogleAuthRouter from "./router/user/googleAuthRouter.js";
 import AuthRegister from "./router/user/AuthRouter.js";
-import MovieRouter from "./router/admin/movie/movieRouter.js"
-import TheaterRouter from  "./router/admin/theater/theaterRouter.js"
-import CityRouter from "./router/admin/city/cityRouter.js"
-import ScreenRouter from "./router/admin/theater/screenRouter.js"
-import SeatRouter from "./router/admin/theater/seatRouter.js"
-import ScreeningRouter from "./router/admin/theater/screeningRouter.js"
-import SeatPriceRouter from "./router/admin/theater/seatPriceRouter.js"
-import pg from 'pg';
+import MovieRouter from "./router/admin/movie/movieRouter.js";
+import TheaterRouter from "./router/admin/theater/theaterRouter.js";
+import CityRouter from "./router/admin/city/cityRouter.js";
+import ScreenRouter from "./router/admin/theater/screenRouter.js";
+import SeatRouter from "./router/admin/theater/seatRouter.js";
+import ScreeningRouter from "./router/admin/theater/screeningRouter.js";
+import SeatPriceRouter from "./router/admin/theater/seatPriceRouter.js";
+import pg from "pg";
 import { ErrorHandler } from "./middleware/OAuth/error/errorHandler.js";
 import { NotFound } from "./middleware/OAuth/error/notFound.js";
 import { AuthMiddleware } from "./middleware/OAuth/user/userMiddleware.js";
 import { ShouldBeAdmin } from "./middleware/OAuth/admin/AdminMiddleware.js";
-
+import UserTheaterRouter from "./router/user/theater/userTheaterRouter.js";
 
 const { Client } = pg;
 
@@ -32,7 +32,7 @@ app.use(
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
-      secure: false, 
+      secure: false,
     },
   })
 );
@@ -51,24 +51,33 @@ app.use("/api/test", (req, res) => {
 
 app.use("/auth", GoogleAuthRouter);
 app.use("/api/auth", AuthRegister);
-app.use("/api/admin", MovieRouter, CityRouter, TheaterRouter, ScreenRouter, SeatRouter, ScreeningRouter, SeatPriceRouter);
+app.use(
+  "/api/admin",
+  MovieRouter,
+  CityRouter,
+  TheaterRouter,
+  ScreenRouter,
+  SeatRouter,
+  ScreeningRouter,
+  SeatPriceRouter
+);
+app.use("/api/user", UserTheaterRouter)
 
-
-app.use(NotFound)
-app.use(ErrorHandler)
+app.use(NotFound);
+app.use(ErrorHandler);
 
 const port = process.env.PORT || 6969;
 const startServer = async () => {
   try {
     const database = new Client({
-        host: "localhost",
-        port: 5432,
-        user: "postgres",
-        password: process.env.PG_PASSWORD,
-        database: "MovieBooking"
-    })
+      host: "localhost",
+      port: 5432,
+      user: "postgres",
+      password: process.env.PG_PASSWORD,
+      database: "MovieBooking",
+    });
     await database.connect();
-    console.log("DATABASE Connected to pg")
+    console.log("DATABASE Connected to pg");
     app.listen(port, () => {
       console.log(`Server is now running on port ${port}`);
     });
