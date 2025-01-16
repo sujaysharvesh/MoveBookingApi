@@ -9,6 +9,8 @@ import TheaterRouter from  "./router/admin/theater/theaterRouter.js"
 import CityRouter from "./router/admin/city/cityRouter.js"
 import ScreenRouter from "./router/admin/theater/screenRouter.js"
 import SeatRouter from "./router/admin/theater/seatRouter.js"
+import ScreeningRouter from "./router/admin/theater/screeningRouter.js"
+import SeatPriceRouter from "./router/admin/theater/seatPriceRouter.js"
 import pg from 'pg';
 import { ErrorHandler } from "./middleware/OAuth/error/errorHandler.js";
 import { NotFound } from "./middleware/OAuth/error/notFound.js";
@@ -49,7 +51,7 @@ app.use("/api/test", (req, res) => {
 
 app.use("/auth", GoogleAuthRouter);
 app.use("/api/auth", AuthRegister);
-app.use("/api/admin", MovieRouter, CityRouter, TheaterRouter, ScreenRouter, SeatRouter);
+app.use("/api/admin", MovieRouter, CityRouter, TheaterRouter, ScreenRouter, SeatRouter, ScreeningRouter, SeatPriceRouter);
 
 
 app.use(NotFound)

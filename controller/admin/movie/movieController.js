@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import prisma from "../../../utils/prisma.js";
+import { z } from "zod"
 
 export const CreateMovie = async (req, res) => {
   const createMovieSchema = z.object({

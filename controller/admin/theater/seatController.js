@@ -39,7 +39,7 @@ export const CreateSeatLayout = async (req, res) => {
         seatsData.push({
           row,
           number: i,
-          category: SeatCategory.SLIVER,
+          category: SeatCategory.SILVER,
           screenId: validateData.screenId,
         });
       }

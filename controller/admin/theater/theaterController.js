@@ -84,7 +84,11 @@ export const GetTheater = async (req, res) => {
       include: {
         screens: {
           include: {
-            seatLayout: true
+            screenings: {
+              include: {
+                price: true
+              }
+            }
           }
         }
       }
@@ -94,6 +98,12 @@ export const GetTheater = async (req, res) => {
     }
     res.status(StatusCodes.OK).json({ theaterExists });
   } catch (err) {
+    if (err.name === "ZodError") {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Validation failed",
+        errors: err.errors,
+      });
+    }
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Something went wrong ", error: err });
@@ -130,6 +140,12 @@ export const UpdateTheater = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({message: "Update theater succussfully", data: updatedTheater})
   } catch (err) {
+    if (err.name === "ZodError") {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Validation failed",
+        errors: err.errors,
+      });
+    }
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Something went Wrong", error: err });
