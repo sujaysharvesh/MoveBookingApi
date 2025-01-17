@@ -20,7 +20,7 @@ export const AuthMiddleware = async (req, res, next) => {
           .status(StatusCode.FORBIDDEN)
           .json({ message: "Invalid or Expired Token" });
       }
-      req.user = { userId: payload.userID, username: payload.username, role: payload.role };
+      req.user = { userId: payload.userId, username: payload.username, role: payload.role };
       next(); 
     } catch (err) {
       return res
