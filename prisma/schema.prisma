@@ -110,8 +110,9 @@ model Seat {
   number   Int
   category SeatCategory
   status   SeatStatus   @default(AVAILABLE)
-  tickets  Ticket[]
+  tickets  Ticket[]     @relation("BookingSeats")
   Booking  Booking[]    @relation("BookingSeats")
+  Ticket   Ticket[]
 
   @@unique([screenId, row, number])
 }
@@ -179,12 +180,13 @@ model Ticket {
   booking      Booking   @relation(fields: [bookingId], references: [id])
   screeningId  String
   screening    Screening @relation(fields: [screeningId], references: [id])
-  seatId       String
-  seat         Seat      @relation(fields: [seatId], references: [id])
-  price        Decimal   @db.Decimal(10, 2)
+  seats        Seat[]    @relation("BookingSeats")
+  totalAmount  Int
   ticketNumber String    @unique
   isCheckedIn  Boolean   @default(false)
   createdAt    DateTime  @default(now())
+  Seat         Seat?     @relation(fields: [seatId], references: [id])
+  seatId       String?
 }
 
 model Review {

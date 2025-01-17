@@ -1,3 +1,4 @@
+
 import prisma from "../../../utils/prisma.js";
 import StatusCodes from "http-status-codes";
 import { promise, z } from "zod";
@@ -87,10 +88,10 @@ export const CreateBooking = async (req, res) => {
     const booking = await prisma.booking.create({
       data: {
         user: {
-          connect: { id: req.user.userId }, // Ensure req.user.id is correctly set
+          connect: { id: req.user.userId },
         },
         screening: {
-          connect: { id: validateData.screeningId }, // Correct: use screening to connect the screening model
+          connect: { id: validateData.screeningId },
         },
         seats: {
           connect: splitSeats.map(({ row, number }) => ({
@@ -104,6 +105,20 @@ export const CreateBooking = async (req, res) => {
         totalAmount,
       },
     });
+    const updateSeats = await Promise.all(
+      splitSeats.map(({ row, number }) =>
+        prisma.seat.update({
+          where: {
+            screenId_row_number: {
+              screenId: screeningExists.screenId,
+              row,
+              number,
+            },
+          },
+          data: { status: "RESERVED"},
+        })
+      )
+    );
 
     res.status(StatusCodes.CREATED).json({ booking });
   } catch (err) {
@@ -126,12 +141,12 @@ export const GetBookingDetails = async (req, res) => {
     const validateData = BookingIdSchema.parse(req.body);
     const booking = await prisma.booking.findUnique({
       where: {
-        id: validateData.bookingId, 
+        id: validateData.bookingId,
       },
       include: {
         seats: true,
-        user: true, 
-        screening: true, 
+        user: true,
+        screening: true,
       },
     });
     if (!booking) {
@@ -139,7 +154,7 @@ export const GetBookingDetails = async (req, res) => {
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Booking Not Found" });
     }
-    res.status(StatusCodes.OK).json({booking})
+    res.status(StatusCodes.OK).json({ booking });
   } catch (err) {
     if (err.name === "ZodError") {
       res
@@ -147,6 +162,43 @@ export const GetBookingDetails = async (req, res) => {
         .json({ message: "Validation Error", error: err.message });
     }
     res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Something Went Wrong", error: err.message || err });
+  }
+};
+
+export const UpdatePayMentStatus = async (req, res) => {
+  const PaymentStatusSchema = z.object({
+    bookingId: z.string().min(1, "BookingId is required"),
+    paymentStatus: z
+      .array(z.enum(["PENDING", "PAID", "FAILED", "REFUNDED"]))
+      .max(1, "One paymentStatus Allowed"),
+  });
+  const validateData = PaymentStatusSchema.parse(req.body);
+  const bookingExists = await prisma.booking.findUnique({
+    where: { id: validateData.bookingId },
+  });
+  if (!bookingExists) {
+    res.status(StatusCodes.NOT_FOUND).json({ message: "Booking not Found" });
+  }
+  const updateBooking = await prisma.booking.update({
+    where: { id: validateData.bookingId },
+    data: { paymentStatus: validateData.paymentStatus[0] },
+  });
+  if (validateData.paymentStatus[0] === "PAID") {
+    await prisma.booking.update({
+      where: { id: validateData.bookingId },
+      data: { status: validateData.paymentStatus },
+    });
+  }
+  try {
+  } catch (err) {
+    if (err.name === "ZodError") {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Validation Error", error: err.message });
+    }
+    return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Something Went Wrong", error: err.message || err });
   }
