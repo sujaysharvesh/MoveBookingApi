@@ -110,9 +110,8 @@ model Seat {
   number   Int
   category SeatCategory
   status   SeatStatus   @default(AVAILABLE)
-  tickets  Ticket[]     @relation("BookingSeats")
+  tickets  Ticket[]     @relation("TicketSeats")
   Booking  Booking[]    @relation("BookingSeats")
-  Ticket   Ticket[]
 
   @@unique([screenId, row, number])
 }
@@ -213,13 +212,11 @@ model Ticket {
   booking      Booking   @relation(fields: [bookingId], references: [id])
   screeningId  String
   screening    Screening @relation(fields: [screeningId], references: [id])
-  seats        Seat[]    @relation("BookingSeats")
+  seats        Seat[]    @relation("TicketSeats")
   totalAmount  Int
   ticketNumber String    @unique
   isCheckedIn  Boolean   @default(false)
   createdAt    DateTime  @default(now())
-  Seat         Seat?     @relation(fields: [seatId], references: [id])
-  seatId       String?
 }
 
 model Review {
@@ -228,7 +225,7 @@ model Review {
   user      User     @relation(fields: [userId], references: [id])
   movieId   String
   movie     Movie    @relation(fields: [movieId], references: [id])
-  rating    Int      @db.SmallInt // 1-5 rating
+  rating    Int      @db.SmallInt 
   comment   String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -9,6 +9,7 @@ export const CreateTicket = async (req, res) => {
 
   try {
     const validateData = getTicketSchema.parse(req.body);
+
     const bookingConfirm = await prisma.booking.findUnique({
       where: { id: validateData.bookingId },
       include: { seats: true, screening: true },
@@ -19,19 +20,26 @@ export const CreateTicket = async (req, res) => {
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Booking is not confirmed yet." });
     }
+
     const ticketNumber = `TICKET-${new Date().getTime()}-${bookingConfirm.id}`;
+    const seatConnections = bookingConfirm.seats.map((seat) => ({
+      id: seat.id,  
+    }));
+    
     const newTicket = await prisma.ticket.create({
       data: {
         booking: { connect: { id: bookingConfirm.id } },
         screening: { connect: { id: bookingConfirm.screeningId } },
         seats: {
-          connect: bookingConfirm.seats.map((seat) => ({ id: seat.id })),
+          connect: seatConnections,  
         },
         totalAmount: bookingConfirm.totalAmount,
         ticketNumber,
       },
+      include: {
+        seats: true
+      }
     });
-
     return res.status(StatusCodes.CREATED).json({
       message: "Ticket created successfully.",
       ticket: newTicket,
@@ -48,3 +56,4 @@ export const CreateTicket = async (req, res) => {
       .json({ message: "Something went wrong", error: err.message || err });
   }
 };
+
