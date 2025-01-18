@@ -3,7 +3,7 @@ import { CreateTheater, DeleteTheater, GetTheater, UpdateTheater } from "../../.
 
 const router = Express.Router()
 
-router.get('/theater-details', GetTheater)
+router.get('/', GetTheater)
 
 router.post('/create-theater', CreateTheater)
 

@@ -56,6 +56,7 @@ app.use("/auth", GoogleAuthRouter);
 app.use("/api/auth", AuthRegister);
 app.use(
   "/api/admin",
+  ShouldBeAdmin,
   MovieRouter,
   CityRouter,
   TheaterRouter,

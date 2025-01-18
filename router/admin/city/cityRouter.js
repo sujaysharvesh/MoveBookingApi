@@ -3,7 +3,7 @@ import { CreateCity, DeleteCity, GetCity, UpdateCity } from "../../../controller
 
 const router = Express.Router()
 
-router.get("/get-city", GetCity)
+router.get("/", GetCity)
 
 router.post("/create-city", CreateCity)
 

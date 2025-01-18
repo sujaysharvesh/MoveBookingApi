@@ -3,7 +3,7 @@ import { CreateScreen, DeleteScreen, GetScreen, UpdateScreen } from "../../../co
 
 const router  = Expresss.Router()
 
-router.get("/get-screen/", GetScreen)
+router.get("/", GetScreen)
 
 router.post("/create-screen", CreateScreen)
 

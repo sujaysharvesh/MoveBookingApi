@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import prisma from "../../../utils/prisma.js";
-import { z } from "zod";
+import { array, z } from "zod";
 
 export const GetTheaterByCity = async (req, res) => {
   const theaterByCitySchema = z.object({
@@ -63,17 +63,15 @@ export const GetTheaterByCity = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .json({ message: "No theaters found for the specified city" });
     }
-    res
-      .status(StatusCodes.OK)
-      .json({
-        data: theaters,
-        meta: {
-          total: totalTheater,
-          limit: validateData.limit,
-          page: validateData.page,
-          totalPage: Math.ceil(totalTheater/validateData.page)
-        },
-      });
+    res.status(StatusCodes.OK).json({
+      data: theaters,
+      meta: {
+        total: totalTheater,
+        limit: validateData.limit,
+        page: validateData.page,
+        totalPage: Math.ceil(totalTheater / validateData.page),
+      },
+    });
   } catch (err) {
     if (err.name === "ZodError") {
       res
@@ -83,5 +81,84 @@ export const GetTheaterByCity = async (req, res) => {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Something Went Wrong", error: err.message });
+  }
+};
+
+export const Search = async (req, res) => {
+  try {
+    const { keyword } = req.body;
+
+    if (!keyword || keyword.trim() === "") {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Keyword is required" });
+    }
+
+    const theaters = await prisma.theater.findMany({
+      where: {
+        OR: [
+          { name: { contains: keyword, mode: "insensitive" } },
+          { address: { contains: keyword, mode: "insensitive" } },
+          {
+            city: {
+              name: { contains: keyword, mode: "insensitive" },
+            },
+          },
+          {
+            screens: {
+              some: {
+                screenings: {
+                  some: {
+                    movie: {
+                      title: { contains: keyword, mode: "insensitive" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        city: {
+          select: {
+            name: true,
+            pincode: true,
+            state: true,
+          },
+        },
+        screens: { 
+          include: { 
+            screenings: {
+              include: {
+                movie: {
+                  select: {
+                    title: true,
+                    language: true,
+                    releaseDate: true,
+                    rating: true,
+                    trailerUrl: true,
+                    duration: true,
+                    description: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    
+    
+    
+
+    return res.status(StatusCodes.OK).json({
+      message: "Search results fetched successfully",
+      data: theaters,
+    });
+  } catch (err) {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Something went wrong", error: err.message });
   }
 };

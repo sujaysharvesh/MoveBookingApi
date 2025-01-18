@@ -3,7 +3,7 @@ import { CreateSeatLayout } from "../../../controller/admin/theater/seatControll
 
 const router  = Express.Router()
 
-router.get("/get-seat-details")
+router.get("/")
 
 router.post("/add-seats", CreateSeatLayout)
 

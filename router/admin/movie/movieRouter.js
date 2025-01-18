@@ -3,7 +3,7 @@ import { CreateMovie, DeleteMovie, UpdateMovie, GetMovieDetail } from "../../../
 
 const router = Express.Router()
 
-router.get("/movie-details", GetMovieDetail)
+router.get("/", GetMovieDetail)
 
 router.post("/creat-movie", CreateMovie)
 
