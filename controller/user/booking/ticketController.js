@@ -2,9 +2,6 @@ import { StatusCodes } from "http-status-codes";
 import prisma from "../../../utils/prisma.js";
 import { z } from "zod";
 
-import { z } from "zod";
-import { StatusCodes } from "http-status-codes";
-
 export const CreateTicket = async (req, res) => {
   const getTicketSchema = z.object({
     bookingId: z.string().min(1, "Booking ID is required"),
@@ -51,4 +48,3 @@ export const CreateTicket = async (req, res) => {
       .json({ message: "Something went wrong", error: err.message || err });
   }
 };
-

@@ -18,6 +18,8 @@ import { AuthMiddleware } from "./middleware/OAuth/user/userMiddleware.js";
 import { ShouldBeAdmin } from "./middleware/OAuth/admin/AdminMiddleware.js";
 import UserTheaterRouter from "./router/user/theater/userTheaterRouter.js";
 import BookingRouter from "./router/user/booking/BookingRouter.js"
+import PaymentRouter from  "./router/user/booking/paymentRouter.js"
+import TicketRouter from "./router/user/booking/ticketRouter.js"
 
 const { Client } = pg;
 
@@ -62,7 +64,7 @@ app.use(
   ScreeningRouter,
   SeatPriceRouter
 );
-app.use("/api/user", AuthMiddleware, UserTheaterRouter, BookingRouter)
+app.use("/api/user", AuthMiddleware, UserTheaterRouter, BookingRouter, PaymentRouter, TicketRouter)
 
 
 app.use(NotFound);

@@ -1,7 +1,7 @@
-
 import prisma from "../../../utils/prisma.js";
 import StatusCodes from "http-status-codes";
 import { promise, z } from "zod";
+import Stripe from "stripe";
 
 export const CreateBooking = async (req, res) => {
   const bookingSchema = z.object({
@@ -115,7 +115,7 @@ export const CreateBooking = async (req, res) => {
               number,
             },
           },
-          data: { status: "RESERVED"},
+          data: { status: "RESERVED" },
         })
       )
     );
@@ -132,6 +132,7 @@ export const CreateBooking = async (req, res) => {
       .json({ message: "Something Went Wrong", error: err.message || err });
   }
 };
+
 
 export const GetBookingDetails = async (req, res) => {
   const BookingIdSchema = z.object({
