@@ -21,6 +21,7 @@ model User {
   role        UserRole  @default(user)
   bookings    Booking[]
   reviews     Review[]
+  Ticket      Ticket[]
 }
 
 enum UserRole {
@@ -196,7 +197,7 @@ enum PaymentMethod {
 }
 
 model Payment {
-  id  String @id @default(uuid())
+  id              String   @id @default(uuid())
   paymentIntentId String   @unique
   clientSecret    String
   amount          Int
@@ -208,6 +209,8 @@ model Payment {
 
 model Ticket {
   id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
   bookingId    String
   booking      Booking   @relation(fields: [bookingId], references: [id])
   screeningId  String
@@ -225,7 +228,7 @@ model Review {
   user      User     @relation(fields: [userId], references: [id])
   movieId   String
   movie     Movie    @relation(fields: [movieId], references: [id])
-  rating    Int      @db.SmallInt 
+  rating    Int      @db.SmallInt
   comment   String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

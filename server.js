@@ -20,6 +20,7 @@ import UserTheaterRouter from "./router/user/theater/userTheaterRouter.js";
 import BookingRouter from "./router/user/booking/BookingRouter.js"
 import PaymentRouter from  "./router/user/booking/paymentRouter.js"
 import TicketRouter from "./router/user/booking/ticketRouter.js"
+import ReviewRouter from "./router/user/review/reviewRouter.js"
 
 const { Client } = pg;
 
@@ -65,7 +66,7 @@ app.use(
   ScreeningRouter,
   SeatPriceRouter
 );
-app.use("/api/user", AuthMiddleware, UserTheaterRouter, BookingRouter, PaymentRouter, TicketRouter)
+app.use("/api/user", AuthMiddleware, UserTheaterRouter, BookingRouter, PaymentRouter, TicketRouter, ReviewRouter )
 
 
 app.use(NotFound);

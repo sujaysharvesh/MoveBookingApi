@@ -28,6 +28,7 @@ export const CreateTicket = async (req, res) => {
     
     const newTicket = await prisma.ticket.create({
       data: {
+        user: { connect: { id: bookingConfirm.userId }},
         booking: { connect: { id: bookingConfirm.id } },
         screening: { connect: { id: bookingConfirm.screeningId } },
         seats: {
