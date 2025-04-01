@@ -21,6 +21,10 @@ import BookingRouter from "./router/user/booking/BookingRouter.js"
 import PaymentRouter from  "./router/user/booking/paymentRouter.js"
 import TicketRouter from "./router/user/booking/ticketRouter.js"
 import ReviewRouter from "./router/user/review/reviewRouter.js"
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from 'swagger-ui-express';
+
+
 
 const { Client } = pg;
 
@@ -43,6 +47,29 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+const swaggerDefinition = {
+  openapi: "3.0.0",
+  info: {
+    title: "Movie Booking API",
+    version: "1.0.0",
+    description: "API Documentation for Movie Booking",
+  },
+  servers: [
+    {
+      url: "http://localhost:8000", // Change if different
+    },
+  ],
+};
+
+const swaggerOptions = {
+  swaggerDefinition,
+  apis: ["./router/**/*.js"], // Path to the directory where your API routes are defined
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 app.use("/api/test", (req, res) => {
   try {
@@ -76,7 +103,7 @@ const port = process.env.PORT || 6969;
 const startServer = async () => {
   try {
     const database = new Client({
-      host: "localhost",
+      host: "db",
       port: 5432,
       user: "postgres",
       password: process.env.PG_PASSWORD,

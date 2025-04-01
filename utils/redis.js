@@ -1,8 +1,5 @@
 import Redis from 'ioredis';
 
-const redis = new Redis({
-    Port : process.env.REDIS_PORT,
-    host : process.env.REDIS_HOST
-})
+const redis = new Redis(process.env.REDIS_URL)
 
 export default redis;
