@@ -23,6 +23,8 @@ import TicketRouter from "./router/user/booking/ticketRouter.js"
 import ReviewRouter from "./router/user/review/reviewRouter.js"
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from 'swagger-ui-express';
+import pkg from "pg-connection-string";
+const { parse } = pkg;
 
 
 
@@ -99,12 +101,17 @@ app.use("/api/user", AuthMiddleware, UserTheaterRouter, BookingRouter, PaymentRo
 app.use(NotFound);
 app.use(ErrorHandler);
 
+// Parse connection string and add SSL
+const connectionString = process.env.DATABASE_URL;
+const dbConfig = parse(connectionString);
+dbConfig.ssl = { rejectUnauthorized: false }; // SSL must be set here
+
+const database = new Client(dbConfig);
+
 const port = process.env.PORT || 6969;
+
 const startServer = async () => {
   try {
-    const database = new Client({
-      database: process.env.DATABASE_URL,
-    });
     await database.connect();
     console.log("DATABASE Connected to pg");
     app.listen(port, () => {
