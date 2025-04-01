@@ -103,11 +103,7 @@ const port = process.env.PORT || 6969;
 const startServer = async () => {
   try {
     const database = new Client({
-      host: "db",
-      port: 5432,
-      user: "postgres",
-      password: process.env.PG_PASSWORD,
-      database: "MovieBooking",
+      database: process.env.DATABASE_URL,
     });
     await database.connect();
     console.log("DATABASE Connected to pg");
