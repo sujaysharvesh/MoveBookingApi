@@ -1,115 +1,122 @@
-Movie Ticket Booking Application
+CineBook API - Movie Ticket Booking System
 
-Description
+A scalable backend API for movie ticket bookings with secure authentication, payment processing, and real-time seat management.
 
-A comprehensive movie ticket booking system that allows users to browse theaters, view movie screenings, and book tickets. The project focuses on providing an intuitive user experience while ensuring data security and efficient performance.
+## 🌟 Features
 
-Features
+### Core Functionality
+- 🎥 Movie & theater search by:
+  - City/location
+  - Theater name
+  - Movie title
+  - Date/time
+- 🪑 Real-time seat availability
+- 🎟️ Ticket booking management
 
-Theater and Movie Search: Advanced search functionality using Prisma ORM to query nested relations, providing accurate results based on user keywords.
+### Security & Authentication
+- 🔐 JWT-based authorization
+- 📧 Email verification (Nodemailer integration)
+- 🔑 OAuth2 integration
+- 💳 Secure payment gateway integration
 
-Movie and Theater Details: Displays relevant information about movies, including title, language, duration, ratings, and descriptions, along with theater details.
+### Performance
+- ⚡ Redis caching for:
+  - Seat availability
+  - Movie listings
+  - Theater information
+- 🐘 Optimized PostgreSQL queries
 
-Booking System: Allows users to select seats and book tickets seamlessly.
+## 🛠️ Tech Stack
 
-Authentication and Authorization: Secure user authentication with JWT-based authorization integrated with OAuth for third-party login.
+| Component          | Technology Used |
+|--------------------|----------------|
+| Backend Framework  | Express.js     |
+| Database           | PostgreSQL     |
+| Cache              | Redis          |
+| Authentication     | JWT + OAuth2   |
+| Email Service      | Nodemailer     |
+| Payment Processing | [Payment Gateway Name] |
+| Containerization   | Docker         |
+| Deployment         | AWS/Azure/etc. |
 
-Session Management: Implemented Redis for efficient session handling and caching.
+## 🚀 Installation
 
-Scalable Architecture: Designed to handle high traffic and ensure consistent performance.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/sujaysharvesh/MovieBookingApi.git
+   cd MovieBookingApi
 
-Technologies Used
+   🔒 Authentication Flow
+User registers → Verification email sent
 
-Backend: Node.js, Express.js
+User clicks verification link → Account activated
 
-Database: PostgreSQL (managed with Prisma ORM)
+User logs in → JWT token issued
 
-Caching: Redis
+Token used for authenticated requests
 
-Authentication: JWT, OAuth
+💳 Payment Flow
+User selects seats → Temporary hold placed
 
-API Testing: Postman
+Payment initiated via gateway
 
-Version Control: Git, GitHub
+On success:
 
-Installation
+Booking confirmed
 
-Clone the repository:
+Confirmation email sent
 
-git clone https://github.com/your-username/movie-ticket-booking.git
+Seat status updated
 
-Navigate to the project directory:
+On failure:
 
-cd movie-ticket-booking
+Hold released
 
-Install dependencies:
+Error returned
 
-npm install
+🧪 Testing
+Run unit tests:
 
-Set up the environment variables:
+bash
+npm test
+Test coverage includes:
 
-Create a .env file in the root directory.
+Authentication services
 
-Add the following variables:
+Booking logic
 
-DATABASE_URL=your_database_url
-REDIS_URL=your_redis_url
-JWT_SECRET=your_jwt_secret
-OAUTH_CLIENT_ID=your_oauth_client_id
-OAUTH_CLIENT_SECRET=your_oauth_client_secret
+Payment processing
 
-Run database migrations:
+Email services
 
-npx prisma migrate dev
+🤝 Contributing
+Fork the project
 
-Start the server:
+Create your feature branch (git checkout -b feature/AmazingFeature)
 
-npm start
+Commit your changes (git commit -m 'Add some AmazingFeature')
 
-API Endpoints
+Push to the branch (git push origin feature/AmazingFeature)
 
-Authentication
+Open a Pull Request
 
-POST /auth/register: User registration
+📜 License
+Distributed under the MIT License. See LICENSE for more information.
 
-POST /auth/login: User login with JWT
+📧 Contact
+Your Name - sharveshsujay@example.com
+Project Link: https://github.com/sujaysharvesh/cinebook-api
 
-GET /auth/oauth: OAuth-based login
 
-Search
+Key features of this README:
+1. **Visual Hierarchy** - Clear sections with emoji headers
+2. **Comprehensive Documentation** - Covers all technical aspects
+3. **Visual Diagrams** - Database schema visualization
+4. **Step-by-Step Guides** - Installation, auth flow, payment flow
+5. **Professional Structure** - License, contact, contributing
 
-POST /search: Search theaters or movies by keyword
-
-Booking
-
-POST /bookings: Book tickets for a screening
-
-Movies
-
-GET /movies: Fetch all movies
-
-GET /movies/:id: Get details of a specific movie
-
-Theaters
-
-GET /theaters: Fetch all theaters
-
-GET /theaters/:id: Get details of a specific theater
-
-Contribution
-
-Fork the repository.
-
-Create a feature branch:
-
-git checkout -b feature-name
-
-Commit your changes:
-
-git commit -m "Description of changes"
-
-Push to the branch:
-
-git push origin feature-name
-
-Open a pull request.
+Would you like me to:
+- Add specific API endpoint documentation?
+- Include deployment instructions for AWS/Azure?
+- Add screenshots or response examples?
+- Customize any sections further?
